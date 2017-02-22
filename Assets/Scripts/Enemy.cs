@@ -12,21 +12,22 @@ public class Enemy : MonoBehaviour {
 
 	GameObject playerGameObject; // this is a reference to the player game object
 
-	public Vector3 direction = new Vector3(1.0f, 0.0f, 0.0f); // normalised direction the enemy will move in
+    Vector3 direction = Vector3.zero; // normalised direction the enemy will move in
 
 	Vector3 start_position; // start position of the enemy
 
 	Vector3 start_direction; // start direction of the enemy
 
-	void Start()
+    void Start()
 	{
-		// find the player game object in the scene
-		playerGameObject = GameObject.FindGameObjectWithTag("Player");
+        // find the player game object in the scene
+        playerGameObject = GameObject.FindGameObjectWithTag("Player");
 
 		// record the start position
 		start_position = transform.position;
 
-		// record the start direction
+        // record the start direction
+        while(direction.x == 0) direction.x = (Random.Range(-1f, 1f));
 		start_direction = direction;
 	}
 
@@ -80,11 +81,24 @@ public class Enemy : MonoBehaviour {
 			// remove a life from the player
 			playerComponent.Lives = playerComponent.Lives - 1;
 
+            // score
+            playerComponent.Score = playerComponent.Score - 10;
+
 			// reset the player
 			playerComponent.Reset();
 
-			// reset the enemy
-			Reset();
-		}
+            // reset the enemy
+            GameObject[] gos = GameObject.FindGameObjectsWithTag("Enemy");
+            for (int i = 0; i < gos.Length-1; i++)
+                Destroy(gos[i]);
+            gos[gos.Length].GetComponent<Enemy>().Reset();
+
+        } else if(hit.collider.gameObject.CompareTag("Gardener") && !playerGameObject.GetComponent<CharacterController>().isGrounded)
+        {
+            playerGameObject.GetComponent<Player>().Score += 100;
+            Reset();
+            Vector3 temp = new Vector3(Random.Range(-1f, 1f), Random.Range(15f, 30f));
+            Object.Instantiate(gameObject, gameObject.transform.position + temp, gameObject.transform.rotation);
+        }
 	}
 }

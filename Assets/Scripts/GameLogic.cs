@@ -17,7 +17,7 @@ public class GameLogic : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		// if the player number of lives is zero, game over
-		if (playerComponent.Lives == 0) {
+		if (playerComponent.Lives <= 0) {
 			gameOver = true;
 
 			// pause the game
